@@ -12,7 +12,6 @@ library(seqinr)
 #read data
 fn <- list.files("./", pattern = "*.csv", full.names = T)
 file_tab2 <- read.table("data_sec_filetab.txt", header = T, sep = "\t", stringsAsFactors = F)
-vgenelen_tab <- read.table("Vgene_length.txt", sep = "\t", header = T, stringsAsFactors = F)
 
 data_vdj_raw2 <- list()
 data_vdj_single2 <- list()
@@ -93,13 +92,13 @@ ggplot(h[which(h$shm_level == "Low"),], aes(x = group, y = Freq)) +
   stat_boxplot(geom = "errorbar", aes(color = group), width = 0.2) +
   geom_boxplot(aes(color = group), fill = "white", outlier.shape = NA, width = 0.5) +
   geom_jitter(size = 2, aes(fill = group), shape = 21, alpha = 0.6, width = 0.2) +
-  geom_signif(comparisons = list(c("Delta Breakthrough", "Non-vaccinated")), 
+  geom_signif(comparisons = list(c("Delta-Infected", "Non-vaccinated")), 
               test = "t.test", step_increase = .05, map_signif_level = T, 
               y_position = 16) +
   scale_fill_manual(values = col_group[1:2]) +
   scale_color_manual(values = col_group[1:2]) +
   scale_y_continuous(limits = c(0, 18), breaks = seq(0, 18, 6)) +
-  scale_x_discrete(labels = c("Delta\nBreakthrough", "Non-\nvaccinated")) +
+  scale_x_discrete(labels = c("Delta\nInfected", "Non-\nvaccinated")) +
   theme(panel.background = element_rect(fill = "white", color = NA),
         panel.grid = element_line(color = "grey90"),
         panel.border = element_blank(),
@@ -268,16 +267,14 @@ for (i in 1:length(t)) {
   m <- table(n[which(n$sample == t[i]),-1]) %>% prop.table() %>% data.frame()
   m$Freq <- m$Freq * 100
   m <- arrange(m, isotype)
-  #m$label <- paste0(m$isotype, "\n", round(m$Freq, 2), "%")
   nt[[i]] <- m
 }
 
 h <- do.call(rbind, nt)
 h$isotype <- factor(h$isotype, levels = isotype[c(2,1,3:8)])
-h$group <- gsub("Infected Only", "Non-vaccinated", h$group)
 
 signif_df <- data.frame(isotype = rep(isotype),
-                        start = rep("Delta Breakthrough", 8),
+                        start = rep("Delta-Infected", 8),
                         end = rep("Non-vaccinated", 8),
                         p = NA, y = 0, stringsAsFactors = F)
 signif_df$isotype <- factor(signif_df$isotype, levels = isotype)
@@ -371,8 +368,6 @@ ht <- Heatmap(mat, show_row_dend = F, show_column_dend = F, show_heatmap_legend 
               border = "black", 
               rect_gp = gpar(col = "white", lwd = 1.5),
               row_names_gp = gpar(family = "Arial"),
-              row_labels = c(gsub("[.]", " ", rownames(mat)[1:8]),
-                             "Omicron BA.1 RBD", "Omicron BA.1 S1+S2", "SARS-CoV-1 S1"),
               column_names_gp = gpar(family = "Arial", col = "red"),
               heatmap_legend_param = list(title = "Relative binding (% of WT S1)",
                                           family = "Arial", border = "black",
