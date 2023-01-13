@@ -11,11 +11,9 @@ for (i in 1:3) {
   data_gem2[[i]]$percent.mt <- PercentageFeatureSet(data_gem2[[i]], pattern = "^MT-")
 }
 
-
 #merge data
 data_gem2 <- merge(data_gem2[[1]], y = c(data_gem2[[2]], data_gem2[[3]]), data_gem2[[4]]),
                   add.cell.ids = file_tab$name)
-
 
 #quality control
 data_gem2$cell_id <- names(data_gem2$orig.ident)
@@ -24,7 +22,6 @@ VlnPlot(data_gem_sub, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), 
 FeatureScatter(data_gem2, feature1 = "nCount_RNA", feature2 = "percent.mt")
 FeatureScatter(data_gem2, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
 data_gem_sub <- subset(data_gem_sub, nFeature_RNA > 200 & nFeature_RNA < 4000 & percent.mt < 10)
-
 
 #integration
 data_gem_sub2 <- SplitObject(data_gem_sub, split.by = "ident")
@@ -55,7 +52,6 @@ DimPlot(data_gem_comb2, reduction = "umap", label = F, label.size = 4, pt.size =
 
 cluster_marker <- FindAllMarkers(data_gem_comb2, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 
-
 #cell type annotation
 monaco_ref <- MonacoImmuneData()
 data_gem_comb_single2 <- as.SingleCellExperiment(data_gem_comb2)
@@ -73,6 +69,7 @@ cell_type_tab <- data.frame(main = monaco_ref$label.main,
                             fine = monaco_ref$label.fine,
                             stringsAsFactors = F)
 cell_type_tab$filter <- paste(cell_type_tab$main, cell_type_tab$fine, sep = "/")
+
 #remove unmatched main label and fine label
 pred_gem$filter <- paste(pred_gem$main_label, pred_gem$fine_label, sep = "/")
 pos <- which(pred_gem$filter %in% cell_type_tab$filter)
@@ -83,7 +80,6 @@ pred_gem <- pred_gem[, -5]
 data_gem_comb2$singler_label <- multi_gsub(data_gem_comb2$seurat_clusters, 
                                           rownames(pred_gem_fine), pred_gem_fine$labels)
 										  
-
 #modify label
 data_gem_comb2$isotype <- multi_gsub(names(data_gem_comb2$orig.ident), 
                                     data_vdj_labeled$cell_id, data_vdj_labeled$c_gene_H)
@@ -171,10 +167,8 @@ ggplot(m, aes(x = integrated_snn_res.0.75, y = validated, label = label)) +
   labs(x = "Cluster", y = NULL) +
   guides(color = "none", fill = "none")
 
- 
 #DEG
 marker_signif <- subset(cluster_marker, p_val_adj < 0.05)
-#heatmap
 aver_exp_cl <- AverageExpression(data_gem_comb2)
 m <- aver_exp_cl$integrated %>% as.data.frame()
 m <- apply(m, 1, function(x){z.score(x)}) %>% t()
@@ -196,8 +190,7 @@ Heatmap(mat, show_row_dend = F, show_column_dend = F, show_heatmap_legend = T,
         row_order = rownames(mat),
         row_names_side = "left", 
         column_names_side = "bottom", column_names_rot = 45, column_names_centered = F,
-        border = "black", 
-        #rect_gp = gpar(col = "white", lwd = 1.5),
+        border = "black",
         row_names_gp = gpar(family = "Arial"),
         column_names_gp = gpar(family = "Arial"),
         heatmap_legend_param = list(title = "Average\nexpression",
