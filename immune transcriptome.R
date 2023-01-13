@@ -1,3 +1,10 @@
+library(ggplot2)
+library(RColorBrewer)
+library(reshape2)
+library(ComplexHeatmap)
+library(Seurat)
+library(SingleR)
+
 #read data
 fn <- c(list.files("./", pattern = "*.h5", full.names = T))
 
