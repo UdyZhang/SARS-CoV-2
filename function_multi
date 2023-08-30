@@ -1,0 +1,34 @@
+#一次替换多个字符串
+#精确
+multi_gsub <- function(list, x, y){
+  if (length(x) != length(y)){
+    return("Different length!")
+  }else{
+    for (i in 1:length(x)) {
+      list <- gsub(paste0("^", x[i],"$"), y[i], list)
+    }
+    return(list)
+  }
+}
+
+#非精确
+multi_gsub2 <- function(list, x, y){
+  if (length(x) != length(y)){
+    return("Different length!")
+  }else{
+    for (i in 1:length(x)) {
+      list <- gsub(x[i], y[i], list)
+    }
+    return(list)
+  }
+}
+
+#一次获取多个元素的位置
+multi_which <- function(list, x) {
+  pos <- c()
+  for (i in 1:length(x)) {
+    nv <- which(list == x[i])
+    pos <- c(pos, nv)
+  }
+  return(pos)
+}
